@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>IIFE Example</title>
+  <script>
+    (function () {
+      // cerchiamo un bottone
+      const btn = document.querySelector('#myBtn');
+      console.log('Bottone trovato:', btn); // ❌ sarà null se l'elemento non è ancora caricato
+    })();
+  </script>
+</head>
+<body>
+  <button id="myBtn">Cliccami</button>
+</body>
+</html>

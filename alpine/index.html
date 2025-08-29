@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Inserimento con Alpine.js + fetch()</title>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body>
+<div x-data="inserimentoForm()" class="form-container">
+    <h2>Inserisci un nome</h2>
+
+    <form @submit.prevent="invia">
+        <input type="text" x-model="nome" required>
+        <button type="submit">Invia</button>
+    </form>
+
+    <div x-text="messaggio" style="margin-top: 10px; color: green;"></div>
+</div>
+
+<script src="inserimentoForm.js"></script>
+</body>
+</html>

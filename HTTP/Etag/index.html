@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Confronto AJAX</title>
+</head>
+<body>
+<h2>Messaggio:</h2>
+<div id="output">Clicca un bottone</div>
+
+<br><br>
+
+<button onclick="caricaConXHR()">AJAX con XMLHttpRequest</button>
+<button onclick="caricaConFetch()">AJAX con fetch()</button>
+
+<script>
+    // 🔹 Metodo 1: XMLHttpRequest (classico)
+    function caricaConXHR() {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                document.getElementById("output").innerHTML = xhr.responseText;
+            } else {
+                document.getElementById("output").innerHTML = "Errore con XHR.";
+            }
+        };
+        xhr.open("GET", "messaggio.php", true);
+        xhr.send();
+    }
+
+    // 🔹 Metodo 2: fetch() (moderno)
+    function caricaConFetch() {
+        // Recupera l'ETag salvato in localStorage (se esiste)
+        const etagSalvato = localStorage.getItem("etag_messaggio");
+
+        // Prepara headers condizionali
+        const headers = {};
+        if (etagSalvato) {
+            headers["If-None-Match"] = etagSalvato;
+        }
+
+        fetch("messaggio.php", {
+            headers: headers
+        })
+            .then(response => {
+                if (response.status === 304) {
+                    // Risposta non modificata → dati già validi
+                    document.getElementById("output").innerHTML = "Contenuto dalla cache (ETag)";
+                    throw new Error("Contenuto non modificato");
+                }
+
+                // Se c'è un nuovo ETag, salvalo
+                const nuovoETag = response.headers.get("ETag");
+                if (nuovoETag) {
+                    localStorage.setItem("etag_messaggio", nuovoETag);
+                }
+
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById("output").innerHTML = data;
+            })
+            .catch(error => {
+                // Ignora errore del tipo "Contenuto non modificato"
+                if (error.message !== "Contenuto non modificato") {
+                    document.getElementById("output").innerHTML = "Errore con fetch: " + error;
+                }
+            });
+    }
+
+</script>
+</body>
+</html>
